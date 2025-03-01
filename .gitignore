@@ -1,0 +1,5 @@
+# Ignorar todos los archivos
+*.xlsx
+*.drawio
+*.pbix
+*.gsheet

@@ -1,0 +1,261 @@
+﻿{
+  "name": "Custom",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#ffffff"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#ffffff"
+              }
+            },
+            "radius": 12
+          }
+        ],
+        "fontFamily": [
+          {
+            "value": "Montserrat"
+          }
+        ],
+        "fontSize": [
+          {
+            "value": 12
+          }
+        ],
+        "fontColor": [
+          {
+            "color": {
+              "solid": {
+                "color": "#23252a"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#f4f1eb"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#f4f1eb"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "title": {
+      "*": {
+        "fontFamily": [
+          {
+            "value": "Montserrat Semibold"
+          }
+        ],
+        "fontSize": [
+          {
+            "value": 16
+          }
+        ],
+        "fontColor": [
+          {
+            "color": {
+              "solid": {
+                "color": "#23252a"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "fontFamily": [
+          {
+            "value": "Montserrat Black"
+          }
+        ],
+        "fontSize": [
+          {
+            "value": 14
+          }
+        ],
+        "fontColor": [
+          {
+            "color": {
+              "solid": {
+                "color": "#23252a"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "axis": {
+      "*": {
+        "fontFamily": [
+          {
+            "value": "Montserrat Light"
+          }
+        ],
+        "fontSize": [
+          {
+            "value": 11
+          }
+        ],
+        "fontColor": [
+          {
+            "color": {
+              "solid": {
+                "color": "#7f8c90"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "colorPalette": {
+      "colors": [
+        {
+          "color": "#23252a"
+        },
+        {
+          "color": "#db5b4c"
+        },
+        {
+          "color": "#993f35"
+        },
+        {
+          "color": "#908e7f"
+        },
+        {
+          "color": "#7f8c90"
+        }
+      ]
+    },
+    "button": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#23252a"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "radius": 8
+          }
+        ],
+        "fontFamily": [
+          {
+            "value": "Montserrat"
+          }
+        ],
+        "fontSize": [
+          {
+            "value": 12
+          }
+        ],
+        "fontColor": [
+          {
+            "color": {
+              "solid": {
+                "color": "#ffffff"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#ffffff"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "radius": 8
+          }
+        ],
+        "fontFamily": [
+          {
+            "value": "Montserrat"
+          }
+        ],
+        "fontSize": [
+          {
+            "value": 12
+          }
+        ],
+        "fontColor": [
+          {
+            "color": {
+              "solid": {
+                "color": "#23252a"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "textClasses": {
+    "label": {
+      "fontFace": "Montserrat Light",
+      "fontSize": 11
+    },
+    "callout": {
+      "fontFace": "Montserrat Black",
+      "fontSize": 34
+    },
+    "title": {
+      "fontFace": "Montserrat Semibold"
+    }
+  },
+  "dataColors": [
+    "#3D2087",
+    "#DB5B4C",
+    "#993F35",
+    "#908E7F",
+    "#7F8C90",
+    "#744EC2",
+    "#D9B300",
+    "#D64550"
+  ]
+}

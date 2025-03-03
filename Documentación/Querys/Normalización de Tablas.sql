@@ -1,5 +1,7 @@
 --- NORMALIZACIÓN DE TABLAS
 
+-- KPI2: Recaudo Bruto
+
 -- 1) TABLA: np_his_abonos | FACTS
 
 select
@@ -17,7 +19,7 @@ select
 	FECHA_AFEC as "Fecha Afectacion",
 	FECHA_CONS as "Fecha Consignacion",
 	HORA_CONS as "Hora Consignacion",
-	VALOR as "Valor Abono COP",
+	VALOR as "Valor Abono COP", ---- VALOR DE RECAUDO
 	CONCEPTO as "Concepto",
 	case
 		when ESTADO is null then "NA"

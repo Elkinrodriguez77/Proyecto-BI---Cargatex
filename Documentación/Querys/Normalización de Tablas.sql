@@ -75,3 +75,52 @@ select
 	FECH_HOR_REG,
 	FECH_HOR_REG_A
 from motos_inv;
+
+-- KPI4: Crecimiento de las motos
+
+-- 1) Motos INV | FACT: Conocer adquisición de nuevas motos por periodo
+
+select
+	contrato,
+	fecha, --- FECHA ADQUISICIÓN
+	fact_ant,
+	fact_fis,
+	cuotaini,
+	egreso,
+	matysoat,
+	comisionase,
+	comisionase_ger,
+	alistamiento,
+	gps,
+	totpreparacion,
+	egrempfinl,
+	FECH_HOR_REG,
+	FECH_HOR_REG_A
+from motos_inv;
+
+
+--- 2) renta_abonos | FACT: Conocer el último estado de las motos
+
+-- parte de: 
+
+select
+	PLACA,
+	FECHA,
+	contrato, 
+	NOVEDAD
+from renta_abonos
+where NOVEDAD <> '' and NOVEDAD is not null
+order by PLACA ASC, FECHA asc 
+
+
+-- ultimo estado conocido en la base: 
+
+SELECT r.PLACA, r.FECHA, r.contrato, r.NOVEDAD
+FROM renta_abonos r
+JOIN (
+    SELECT PLACA, MAX(FECHA) AS UltimaFecha
+    FROM renta_abonos
+    WHERE NOVEDAD <> '' AND NOVEDAD IS NOT NULL
+    GROUP BY PLACA
+) sub ON r.PLACA = sub.PLACA AND r.FECHA = sub.UltimaFecha;
+

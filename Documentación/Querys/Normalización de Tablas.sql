@@ -1,126 +1,165 @@
 --- NORMALIZACIÓN DE TABLAS
 
--- KPI2: Recaudo Bruto
+-- KPI2: Recaudo
 
--- 1) TABLA: np_his_abonos | FACTS
-
-select
-	CONTRATO as "Contrato", --- ¿POR QUÉ HAY CONTRATOS EN NULO? -- PK (DE DOS COLUMNAS)
-	FECHA as "Fecha", -- PK (DE DOS COLUMNAS)
-	--FECHA_INI as "Fecha Inicial",
-	-- ABONO, -- VALIDAR SI EL NÚMERO LO LEE DE FORMA CORRECTA LA BASE
-	case
-		when COBRO is null then "NA"
-		else COBRO
-	end as "Cobro",
-	HORA as "Hora",
-	detalle_abono as "Detalle Abono",
-	CONSIGNACION as "Consignacion",
-	FECHA_AFEC as "Fecha Afectacion",
-	FECHA_CONS as "Fecha Consignacion",
-	HORA_CONS as "Hora Consignacion",
-	VALOR as "Valor Abono COP", ---- VALOR DE RECAUDO
-	CONCEPTO as "Concepto",
-	case
-		when ESTADO is null then "NA"
-		else ESTADO
-	end as "Estado",
-	CARTAMOTIVO as "Carta Motivo",
-	empresa as "Empresa",
-	case
-		when tipopago is null then "NA"
-		else tipopago
-	end as "Tipo Pago",
-	case
-		when placa is null or placa = '' then "NA"
-		else placa
-	end as "Placa"
-from np_his_abonos;
-
--- 2) Motos INV | DIMS & FACTS
-
---- a: DIM
-select
-	contrato as "Contrato",
-	fiadora as "Fiadora",
-	conductor as "Conductor",
-	tipomoto as "Tipo Moto",
-	case
-		when consecionario is null or consecionario = '' then 'NA'
-		else consecionario 
-	end as "Concesionario",
-	cobro as "Cobro",
-	case
-		when destino is null or destino = '' then 'NA'
-		else destino
-	end as "Destino"
-from motos_inv;
-
---- b: FACT
+--- Query principal: 
 
 select
 	contrato,
-	fecha,
-	fact_ant,
-	fact_fis,
-	cuotaini,
-	egreso,
-	matysoat,
-	comisionase,
-	comisionase_ger,
-	alistamiento,
-	gps,
-	totpreparacion,
-	egrempfinl,
-	FECH_HOR_REG,
-	FECH_HOR_REG_A
-from motos_inv;
-
--- KPI4: Crecimiento de las motos
-
--- 1) Motos INV | FACT: Conocer adquisición de nuevas motos por periodo
-
-select
-	contrato,
-	fecha, --- FECHA ADQUISICIÓN
-	fact_ant,
-	fact_fis,
-	cuotaini,
-	egreso,
-	matysoat,
-	comisionase,
-	comisionase_ger,
-	alistamiento,
-	gps,
-	totpreparacion,
-	egrempfinl,
-	FECH_HOR_REG,
-	FECH_HOR_REG_A
-from motos_inv;
-
-
---- 2) renta_abonos | FACT: Conocer el último estado de las motos
-
--- parte de: 
-
-select
 	PLACA,
-	FECHA,
-	contrato, 
-	NOVEDAD
+	ABONO,
+	'RENTAYA_D' as empresa,
+	COBRO,
+	FECHA
 from renta_abonos
-where NOVEDAD <> '' and NOVEDAD is not null
-order by PLACA ASC, FECHA asc 
+where contrato <> '' AND contrato IS NOT null
+
+--- union de las subtablas:
+
+select
+	CONTRATO,
+	placa,
+	Recaudo - Total_Carta as Recaudo2,
+	empresa,
+	COBRO,
+	FECHA,
+	'his_abonos' as base
+FROM (
+    SELECT
+        CONTRATO,
+        placa,
+        empresa,
+        (ABONO + TRANSF + MULTA + REPUESTO) AS Recaudo,
+        (PRONTOPAGO + CARTAREALQUILER + CARTAPERDIDA + CARTAREGRESODIARIO + CARTAADMINISTRACION) AS Total_Carta,
+        COBRO,
+        FECHA
+    FROM np_his_abonos
+    WHERE CARTA = 'NO' 
+        AND (CONTRATO <> '' AND CONTRATO IS NOT NULL)
+) AS consulta
+
+union
+
+select
+	contrato,
+	PLACA,
+	ABONO,
+	'RENTAYA_D' as empresa,
+	COBRO,
+	FECHA,
+	'renta_abonos' as base
+from renta_abonos
+where contrato <> '' AND contrato IS NOT null
 
 
--- ultimo estado conocido en la base: 
+--- KPI4: Crecimiento Motos:
 
-SELECT r.PLACA, r.FECHA, r.contrato, r.NOVEDAD
-FROM renta_abonos r
-JOIN (
-    SELECT PLACA, MAX(FECHA) AS UltimaFecha
-    FROM renta_abonos
-    WHERE NOVEDAD <> '' AND NOVEDAD IS NOT NULL
-    GROUP BY PLACA
-) sub ON r.PLACA = sub.PLACA AND r.FECHA = sub.UltimaFecha;
+--- 1) RENTAYA:
 
+
+select
+	*
+from
+(
+	select
+		CONTRATO,
+		FECHA,
+		CONCEPTO,
+		INGPARA,
+		COMENTARIO,
+		estado,
+		CASE 
+		    WHEN CONCEPTO = '071' THEN CAST('Entregadas' AS CHAR)
+		    WHEN CONCEPTO = '070' AND INGPARA = '02' THEN CAST('Quitadas' AS CHAR)
+		    WHEN CONCEPTO = '070' AND INGPARA = '06' THEN CAST('Voluntarias' AS CHAR)
+		    ELSE NULL
+		END AS tipo_entrega,
+		"base_np_gestion_tar" as base
+	from np_gestion_tar
+) as consulta
+where tipo_entrega is not null
+
+union
+
+select
+	CONTRATO,
+	FECHA,
+	CONCEPTO,
+	'NA' as "INGPARA",
+	'NA' as "COMENTARIO",
+	ESTADO,
+	'Quitadas Semanal' as tipo_entrega,
+	"base_np_his_abonos" as base
+from np_his_abonos
+where CARTAMOTIVO = 'CARTA REGRESO DIARIO'
+
+
+--- MOTO HOY:
+
+--- VENTAS:
+
+select
+	ID,
+	ESTADO,
+	CC,
+	CONDUCTOR,
+	BARRIO_CONDUCTOR,
+	LABOR,
+	MOTO_INTERES,
+	VR_CUOTA,
+	FECHA_CUOTAINICIAL_R,
+	EMPRESA
+from vis_tramite
+where ESTADO = 'CUOTA INICIAL'
+
+-- ADMINISTRACION: carta que estaba en semanal y pasa a diario (por mal comportamiento de pago)
+--- Y REALQUILER: QUE UN PROPIETARIO CEDE SU CONTRATO A OTRO, tenia contrato semanal.
+
+select
+	CONTRATO,
+	FECHA,
+	CONCEPTO,
+	INGPARA,
+	COMENTARIO,
+	estado,
+	case
+		when CONCEPTO = '050' then 'Administración'
+		when CONCEPTO = '049' then 'Realquiler'
+	else null
+	end
+from np_gestion_tar
+where CONCEPTO IN ('050', '049') 
+
+--- NORMAL (tabla rentabilidad_activos): La persona completo el pago de forma exitosa (se le hace carta "Normal" ya que saldo pago)
+
+--- tabla con varios datos interantes para analizar.
+select
+	cobro,
+	contrato,
+	placa,
+	arrendador,
+	barrio,
+	empresa,
+	costo,
+	Valor_moto,
+	vlrabono,
+	saldo,
+	TotalTiempoPago,
+	FechaRegistro 
+from rentabilidad_activos
+where CONCEPTO = 'NORMAL'
+
+
+
+---- EN PROCESO (VALIDAR FECHAS DE PAGO)
+
+select
+	CONTRATO,
+	FECHA,
+	dia_canon as fecha_de_pago
+from np_his_abonos
+where dia_canon is not null
+
+--- dia_canon: MES (pago mensual); Qui (Pago Quincenal); Días de la semana (pagos semanales)
+
+--- en renta abonos el pago es a diario (incluido domingo ¿?)
